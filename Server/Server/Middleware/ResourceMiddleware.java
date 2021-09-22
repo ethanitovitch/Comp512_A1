@@ -1,10 +1,9 @@
 package Server.Middleware;
 
-import Server.Common.RMHashMap;
-import Server.Common.ResourceManager;
 import Server.Interface.IResourceManager;
 
 import java.rmi.RemoteException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -43,12 +42,19 @@ public class ResourceMiddleware implements IResourceManager {
 
     @Override
     public int newCustomer(int id) throws RemoteException {
-        return 0;
+        int cid = Integer.parseInt(String.valueOf(id) +
+                String.valueOf(Calendar.getInstance().get(Calendar.MILLISECOND)) +
+                String.valueOf(Math.round(Math.random() * 100 + 1)));
+        newCustomer(id, cid);
+        return cid;
     }
 
     @Override
     public boolean newCustomer(int id, int cid) throws RemoteException {
-        return false;
+        boolean flight = resourceManagers.get(FLIGHTS).newCustomer(id, cid);
+        boolean car = resourceManagers.get(CARS).newCustomer(id, cid);
+        boolean room = resourceManagers.get(ROOMS).newCustomer(id, cid);
+        return flight && car && room;
     }
 
     @Override
@@ -71,7 +77,11 @@ public class ResourceMiddleware implements IResourceManager {
 
     @Override
     public boolean deleteCustomer(int id, int customerID) throws RemoteException {
-        return false;
+        boolean result = true;
+        result &= resourceManagers.get(FLIGHTS).deleteCustomer(id, customerID);
+        result &= resourceManagers.get(CARS).deleteCustomer(id, customerID);
+        result &= resourceManagers.get(ROOMS).deleteCustomer(id, customerID);
+        return result;
     }
 
     @Override
@@ -94,7 +104,13 @@ public class ResourceMiddleware implements IResourceManager {
 
     @Override
     public String queryCustomerInfo(int id, int customerID) throws RemoteException {
-        return null;
+        String flight = resourceManagers.get(FLIGHTS).queryCustomerInfo(id, customerID);
+        String car = resourceManagers.get(CARS).queryCustomerInfo(id, customerID);
+        String room = resourceManagers.get(ROOMS).queryCustomerInfo(id, customerID);
+
+        car = car.substring(car.indexOf('\n')+1);
+        room = room.substring(room.indexOf('\n')+1);
+        return flight + car + room;
     }
 
     @Override
@@ -117,22 +133,36 @@ public class ResourceMiddleware implements IResourceManager {
 
     @Override
     public boolean reserveFlight(int id, int customerID, int flightNumber) throws RemoteException {
-        return false;
+        IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
+        return resourceManager.reserveFlight(id, customerID, flightNumber);
     }
 
     @Override
     public boolean reserveCar(int id, int customerID, String location) throws RemoteException {
-        return false;
+        IResourceManager resourceManager = resourceManagers.get(CARS);
+        return resourceManager.reserveCar(id, customerID, location);
     }
 
     @Override
     public boolean reserveRoom(int id, int customerID, String location) throws RemoteException {
-        return false;
+        IResourceManager resourceManager = resourceManagers.get(ROOMS);
+        return resourceManager.reserveRoom(id, customerID, location);
     }
 
     @Override
     public boolean bundle(int id, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException {
-        return false;
+        boolean result = true;
+
+        for (String flightNumber : flightNumbers) {
+            result &= reserveFlight(id, customerID, Integer.parseInt(flightNumber));
+        }
+        if (car) {
+            result &= reserveCar(id, customerID, location);
+        }
+        if (room) {
+            result &= reserveRoom(id, customerID, location);
+        }
+        return result;
     }
 
     @Override
