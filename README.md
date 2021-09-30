@@ -4,7 +4,7 @@
 Have three terminals open:
 1. For the Client, in that terminal run something like: `ssh eitovi@lab2-18`
 2. For the Server, in that terminal run something like: `ssh eitovi@lab2-23`
-3. For file transfer, from the root folder run something like: `scp -r ./Template eitovi@lab2-23.cs.mcgill.ca:/home/2018/eitovi/Desktop/Comp512/A1`
+3. For file transfer, from the root folder run something like: `scp -r ./Template eitovi@lab2-23.cs.mcgill.ca:/home/2018/eitovi/Desktop/Comp512/A1` make sure to run `make` after transfering files!
 
 ### Running RMI
 
