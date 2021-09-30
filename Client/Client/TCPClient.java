@@ -17,6 +17,7 @@ public class TCPClient extends Client {
         {
             s_serverHost = args[0];
         }
+
         if (args.length > 1)
         {
             s_serverName = args[1];
@@ -35,7 +36,7 @@ public class TCPClient extends Client {
 
         // Get a reference to the RMIRegister
         try {
-            RMIClient client = new RMIClient();
+            TCPClient client = new TCPClient();
             client.connectServer();
             client.start();
         }

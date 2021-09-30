@@ -28,15 +28,22 @@ public class TCPThread extends Thread {
             String message = null;
             while ((message = inFromClient.readLine())!=null)
             {
-                System.out.println("message:"+message);
-                String[] params =  message.split(",");
+                // TODO write a switch case like in Client/Client
+                // Look at the format coming from Server/TCP/ResourceStub
+                // The method name comes first then arguments.
+                // Switch on the method name
 
+                System.out.println("message: " + message);
+                String[] params =  message.split(",");
                 IResourceManager resourceManager = resourceManagers.get("Flights");
+
                 Boolean result = resourceManager.addFlight(
                         Integer.parseInt(params[1]),
                         Integer.parseInt(params[2]),
                         Integer.parseInt(params[3]),
                         Integer.parseInt(params[4]));
+
+                System.out.println("Result :" + result);
                 outToClient.println(result);
             }
             socket.close();
