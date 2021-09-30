@@ -11,10 +11,14 @@ FORCE: ;
 ../Server/RMIInterface.jar: ../Server/Server/Interface/IResourceManager.java
 	make -C ../Server/ RMIInterface.jar
 
-compile-client: ../Server/RMIInterface.jar
-	javac -cp ../Server/RMIInterface.jar Client/*.java
+../Server/ResourceStub.jar: ../Server/Server/TCP/ResourceStub.java
+	make -C ../Server/ ResourceStub.jar
+
+compile-client: ../Server/RMIInterface.jar ../Server/ResourceStub.jar 
+	javac -cp ../Server/RMIInterface.jar:../Server/ResourceStub.jar Client/*.java
 
 clean:
 	rm -f Client/*.class
 	rm -f ../Server/RMIInterface.jar
+	rm -f ../Server/ResourceStub.jar
 	rm -f java.policy

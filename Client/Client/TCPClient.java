@@ -1,6 +1,6 @@
 package Client;
 
-import Server.TCP.ResourceStub;
+import Server.TCP.*;
 
 import java.net.Socket;
 import java.rmi.RemoteException;

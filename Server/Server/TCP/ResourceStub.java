@@ -17,8 +17,8 @@ public class ResourceStub implements IResourceManager {
     BufferedReader inFromServer;
 
     public ResourceStub(Socket socket) throws IOException {
-        socket = socket;
-        outToServer = new PrintWriter(socket.getOutputStream(),true);
+        this.socket = socket;
+        this.outToServer = new PrintWriter(socket.getOutputStream(),true);
     }
 
     @Override
