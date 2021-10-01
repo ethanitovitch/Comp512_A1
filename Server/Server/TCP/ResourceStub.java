@@ -15,11 +15,13 @@ public class ResourceStub implements IResourceManager {
     Socket socket;
     PrintWriter outToServer;
     BufferedReader inFromServer;
+    protected String m_name = "";
 
-    public ResourceStub(Socket socket) throws IOException {
+    public ResourceStub(Socket socket, String p_name) throws IOException {
         this.socket = socket;
         this.outToServer = new PrintWriter(socket.getOutputStream(),true);
         this.inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        m_name = p_name;
     }
 
     @Override
@@ -78,7 +80,7 @@ public class ResourceStub implements IResourceManager {
 
     @Override
     public boolean newCustomer(int id, int cid) throws RemoteException {
-        outToServer.println(String.format("newCustomer,%d,%d",id, cid));
+        outToServer.println(String.format("newCustomerCID,%d,%d",id, cid));
         String res = null;
         try {
             res = inFromServer.readLine();
@@ -291,6 +293,6 @@ public class ResourceStub implements IResourceManager {
 
     @Override
     public String getName() throws RemoteException {
-        return null;
+        return m_name;
     }
 }

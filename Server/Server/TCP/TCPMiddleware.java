@@ -53,7 +53,7 @@ public class TCPMiddleware extends ResourceMiddleware {
             while (true) {
                 try {
                     Socket socket = new Socket(machine, s_serverPort);
-                    ResourceStub m_resourceManager = new ResourceStub(socket);
+                    ResourceStub m_resourceManager = new ResourceStub(socket, serverName);
                     resourceManagers.put(serverName, m_resourceManager);
                     System.out.println("Connected to '" + serverName + "' server [" + machine + ":" + s_serverPort + "/" + s_rmiPrefix + serverName + "]");
                     break;
