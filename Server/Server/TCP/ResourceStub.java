@@ -12,6 +12,8 @@ import java.util.Vector;
 
 public class ResourceStub implements IResourceManager {
 
+    static final int DELAY = 200;
+
     Socket socket;
     PrintWriter outToServer;
     BufferedReader inFromServer;
@@ -26,6 +28,7 @@ public class ResourceStub implements IResourceManager {
 
     @Override
     public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
+        System.out.println("Sending: " + String.format("addFlight,%d,%d,%d,%d", id, flightNum, flightSeats, flightPrice));
         outToServer.println(String.format(
                 "addFlight,%d,%d,%d,%d",
                 id, flightNum, flightSeats, flightPrice));
@@ -184,12 +187,30 @@ public class ResourceStub implements IResourceManager {
     @Override
     public String queryCustomerInfo(int id, int customerID) throws RemoteException {
         outToServer.println(String.format("queryCustomerInfo,%d,%d",id, customerID));
-        String res = null;
         try {
-            res = inFromServer.readLine();
+            Thread.sleep(DELAY);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String res = "";
+        String line = null;
+        try {
+            line = inFromServer.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        while (line != null) {
+            if (line.isEmpty()) {
+                break;
+            }
+            res += line + "\n";
+            try {
+                line = inFromServer.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         return res;
     }
 
@@ -246,7 +267,7 @@ public class ResourceStub implements IResourceManager {
     @Override
     public boolean reserveCar(int id, int customerID, String location) throws RemoteException {
         outToServer.println(String.format(
-                "reserveCar,%d,%d,%d",
+                "reserveCar,%d,%d,%s",
                 id, customerID, location));
         String res = null;
         try {
@@ -276,10 +297,11 @@ public class ResourceStub implements IResourceManager {
         String str = "bundle," 
             + id + "," 
             + customerID + "," 
-            + flightNumbers.toString() + ","
+            + flightNumbers.toString().replace(",", "#") + ","
             + location + ","
             + car + ","
             + room;
+        System.out.println(str);
         
         outToServer.println(str);
         String res = null;
@@ -294,11 +316,28 @@ public class ResourceStub implements IResourceManager {
     @Override
     public String queryAnalytics(String location) throws RemoteException {
         outToServer.println(String.format("queryAnalytics,%s",location));
-        String res = null;
         try {
-            res = inFromServer.readLine();
+            Thread.sleep(DELAY);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String res = "";
+        String line = null;
+        try {
+            line = inFromServer.readLine();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        while (line != null) {
+            if (line.isEmpty()) {
+                break;
+            }
+            res += line + "\n";
+            try {
+                line = inFromServer.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return res;
     }

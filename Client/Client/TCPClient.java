@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 
 public class TCPClient extends Client {
     private static String s_serverHost = "localhost";
-    private static int s_serverPort = 9090;
+    private static int s_serverPort = 9091;
     private static String s_serverName = "Server";
     private static String s_rmiPrefix = "group_23_";
 
@@ -58,7 +58,7 @@ public class TCPClient extends Client {
             boolean first = true;
             while (true) {
                 try {
-                    Socket socket = new Socket(s_serverHost, 9090);
+                    Socket socket = new Socket(s_serverHost, 9091);
                     m_resourceManager = new ResourceStub(socket, s_serverName);
                     System.out.println("Connected to '" + s_serverName + "' server [" + s_serverHost + ":" + s_serverPort + "/" + s_rmiPrefix + s_serverName + "]");
                     break;

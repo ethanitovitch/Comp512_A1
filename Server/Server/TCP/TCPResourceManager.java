@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TCPResourceManager extends ResourceManager {
-    private static int s_serverPort = 9090;
+    private static int s_serverPort = 9091;
     private static String s_serverName = "Server";
     private static String s_rmiPrefix = "group_23_";
 

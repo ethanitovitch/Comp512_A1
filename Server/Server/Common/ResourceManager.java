@@ -391,8 +391,8 @@ public class ResourceManager implements IResourceManager
 	}
 
 	public String getStatus(int total, int reserved) {
-		double percent = (double) reserved / (double) total;
-		if (percent == 0.0) {
+		double percent =  ((double) total - (double) reserved) / (double) total;
+		if (percent == 1.0) {
 			return "Full";
 		} else if (percent >= 0.8) {
 			return "High";
@@ -415,35 +415,36 @@ public class ResourceManager implements IResourceManager
 
 	@Override
 	public String queryAnalytics(String location) throws RemoteException {
-		boolean allLocations = location == "all";
+		boolean allLocations = location.equals("all");
+		System.out.println("allow all locations" + allLocations);
 
 		ReservableItem curObj;
 
-		String flightData = "Flight Analytics:\n--------\n";
+		String flightData = "Flight Analytics:\n---------------\n";
 		boolean foundFlight = false;
 
-		String carData = "Car Analytics:\n--------\n";
+		String carData = "Car Analytics:\n---------------\n";
 		boolean foundCar = false;
 
-		String roomData = "Room Analytics:\n--------\n";
+		String roomData = "Room Analytics:\n---------------\n";
 		boolean foundRoom = false;
 
 		for (String key : m_data.keySet()) {
 			if (key.contains("flight")) {
-				foundFlight &= true;
+				foundFlight |= true;
 				curObj = (ReservableItem)readData(-1, key);
 				flightData += getItemAnalytics(curObj);
 			} else if (key.contains("car")) {
 				curObj = (ReservableItem)readData(-1, key);
 				if (allLocations || curObj.getLocation().equals(location)) {
 					carData += getItemAnalytics(curObj);
-					foundCar &= true;
+					foundCar |= true;
 				}
 			} else if (key.contains("room")) {
 				curObj = (ReservableItem)readData(-1, key);
 				if (allLocations || curObj.getLocation().equals(location)) {
 					roomData += getItemAnalytics(curObj);
-					foundRoom &= true;
+					foundRoom |= true;
 				}
 			}
 		}

@@ -37,6 +37,7 @@ public class TCPThread extends Thread {
             while ((message = inFromClient.readLine())!=null)
             {
                 String[] params =  message.split(",");
+                System.out.println("Command: " + params[0]);
                 switch (params[0]) {
                     case "addFlight": {
                         IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
@@ -46,7 +47,7 @@ public class TCPThread extends Thread {
                                 Integer.parseInt(params[3]),
                                 Integer.parseInt(params[4]));
                         outToClient.println(result);
-
+                        break;
                     }
                     case "addCars": {
                         IResourceManager resourceManager = resourceManagers.get(CARS);
@@ -56,15 +57,17 @@ public class TCPThread extends Thread {
                                 Integer.parseInt(params[3]),
                                 Integer.parseInt(params[4]));
                         outToClient.println(result);
+                        break;
                     }
                     case "addRooms": {
                         IResourceManager resourceManager = resourceManagers.get(ROOMS);
-                        Boolean result = resourceManager.addCars(
+                        Boolean result = resourceManager.addRooms(
                                 Integer.parseInt(params[1]),
                                 params[2],
                                 Integer.parseInt(params[3]),
                                 Integer.parseInt(params[4]));
                         outToClient.println(result);
+                        break;
                     }
                     case "newCustomer": {
                         int cid = Integer.parseInt(params[1]
@@ -76,6 +79,7 @@ public class TCPThread extends Thread {
                         resourceManagers.get(ROOMS).newCustomer(Integer.parseInt(params[1]), cid);
                         
                         outToClient.println(cid);
+                        break;
                     }
                     case "newCustomerCID": {
                         boolean flight = resourceManagers.get(FLIGHTS).newCustomer(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
@@ -83,21 +87,25 @@ public class TCPThread extends Thread {
                         boolean room = resourceManagers.get(ROOMS).newCustomer(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
                         
                         outToClient.println(flight && car && room);
+                        break;
                     }
                     case "deleteFlight": {
                         IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
                         boolean result = resourceManager.deleteFlight(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
                         outToClient.println(result);
+                        break;
                     }
                     case "deleteCars": {
                         IResourceManager resourceManager = resourceManagers.get(CARS);
                         boolean result = resourceManager.deleteCars(Integer.parseInt(params[1]), params[2]);
                         outToClient.println(result);
+                        break;
                     }
                     case "deleteRooms": {
                         IResourceManager resourceManager = resourceManagers.get(ROOMS);
                         boolean result = resourceManager.deleteRooms(Integer.parseInt(params[1]), params[2]);
                         outToClient.println(result);
+                        break;
                     }
                     case "deleteCustomer": {
                         boolean flight = resourceManagers.get(FLIGHTS).deleteCustomer(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
@@ -105,21 +113,25 @@ public class TCPThread extends Thread {
                         boolean room = resourceManagers.get(ROOMS).deleteCustomer(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
                         
                         outToClient.println(flight && car && room);
+                        break;
                     }
                     case "queryFlight": {
                         IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
                         int result = resourceManager.queryFlight(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
                         outToClient.println(result);
+                        break;
                     }
                     case "queryCars": {
                         IResourceManager resourceManager = resourceManagers.get(CARS);
                         int result = resourceManager.queryCars(Integer.parseInt(params[1]), params[2]);
                         outToClient.println(result);
+                        break;
                     }
                     case "queryRooms": {
                         IResourceManager resourceManager = resourceManagers.get(ROOMS);
                         int result = resourceManager.queryRooms(Integer.parseInt(params[1]), params[2]);
                         outToClient.println(result);
+                        break;
                     }
                     case "queryCustomerInfo": {
                         String flight = resourceManagers.get(FLIGHTS).queryCustomerInfo(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
@@ -129,65 +141,79 @@ public class TCPThread extends Thread {
                         car = car.substring(car.indexOf('\n')+1);
                         room = room.substring(room.indexOf('\n')+1);
                         outToClient.println(flight + car + room);
+                        break;
                     }
                     case "queryFlightPrice": {
                         IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
                         int result = resourceManager.queryFlightPrice(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
                         outToClient.println(result);
+                        break;
                     }
                     case "queryCarsPrice": {
                         IResourceManager resourceManager = resourceManagers.get(CARS);
                         int result = resourceManager.queryCarsPrice(Integer.parseInt(params[1]), params[2]);
                         outToClient.println(result);
+                        break;
                     }
                     case "queryRoomsPrice": {
                         IResourceManager resourceManager = resourceManagers.get(ROOMS);
                         int result = resourceManager.queryRoomsPrice(Integer.parseInt(params[1]), params[2]);
                         outToClient.println(result);
+                        break;
                     }
                     case "reserveFlight": {
                         IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
                         boolean result = resourceManager.reserveFlight(Integer.parseInt(params[1]), Integer.parseInt(params[2]), Integer.parseInt(params[3]));
                         outToClient.println(result);
+                        break;
                     }
                     case "reserveCar": {
                         IResourceManager resourceManager = resourceManagers.get(CARS);
                         boolean result = resourceManager.reserveCar(Integer.parseInt(params[1]), Integer.parseInt(params[2]), params[3]);
                         outToClient.println(result);
+                        break;
                     }
                     case "reserveRoom": {
                         IResourceManager resourceManager = resourceManagers.get(ROOMS);
                         boolean result = resourceManager.reserveRoom(Integer.parseInt(params[1]), Integer.parseInt(params[2]), params[3]);
                         outToClient.println(result);
+                        break;
                     }
                     case "bundle": {
                         boolean result = true;
-
+                        System.out.println("Bundling");
                         String flightsString = params[3];
+                        System.out.println("flights string: " + flightsString);
                         flightsString = flightsString.replace("[", "");
                         flightsString = flightsString.replace("]", "");
-                        String[] flights = flightsString.split(", ");
+                        String[] flights = flightsString.split("# ");
                         Vector<String> flightNumbers = new Vector<String>(Arrays.asList(flights));
 
                         for (String flightNumber : flightNumbers) {
                             IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
                             result &= resourceManager.reserveFlight(Integer.parseInt(params[1]), Integer.parseInt(params[2]), Integer.parseInt(flightNumber));
                         }
+                        System.out.println("location: " + params[4]);
+                        System.out.println("cars: " + params[5]);
                         if (Boolean.valueOf(params[5])) {
                             IResourceManager resourceManager = resourceManagers.get(CARS);
                             result &= resourceManager.reserveCar(Integer.parseInt(params[1]), Integer.parseInt(params[2]), params[4]);
                         }
+                        System.out.println("rooms: " + params[6]);
                         if (Boolean.valueOf(params[6])) {
                             IResourceManager resourceManager = resourceManagers.get(ROOMS);
                             result &= resourceManager.reserveRoom(Integer.parseInt(params[1]), Integer.parseInt(params[2]), params[4]);
                         }
                         outToClient.println(result);
+                        break;
                     }
                     case "queryAnalytics": {
+                        System.out.println("Querying analytics for: " + params[1]);
                         String flight = resourceManagers.get(FLIGHTS).queryAnalytics(params[1]);
                         String car = resourceManagers.get(CARS).queryAnalytics(params[1]);
                         String room = resourceManagers.get(ROOMS).queryAnalytics(params[1]);
                         outToClient.println(flight + car + room);
+                        break;
                     }
                 }                
             }

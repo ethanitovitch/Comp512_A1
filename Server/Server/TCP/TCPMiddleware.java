@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 
 public class TCPMiddleware extends ResourceMiddleware {
-    private static int s_serverPort = 9090;
+    private static int s_serverPort = 9091;
     private static String s_serverName = "Server";
     private static String s_rmiPrefix = "group_23_";
     private static String[] serverNames = {"Flights", "Cars", "Rooms"};
@@ -31,7 +31,9 @@ public class TCPMiddleware extends ResourceMiddleware {
             ServerSocket serverSocket = new ServerSocket(s_serverPort);
             while (true) {
                 Socket socket = serverSocket.accept();
+                System.out.println("Found Connection");
                 new TCPThread(socket, server.resourceManagers).start();
+                System.out.println("Connection Closed");
             }
         }
         catch (Exception e) {
