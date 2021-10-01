@@ -292,6 +292,18 @@ public class ResourceStub implements IResourceManager {
     }
 
     @Override
+    public String queryAnalytics(String location) throws RemoteException {
+        outToServer.println(String.format("queryAnalytics,%s",location));
+        String res = null;
+        try {
+            res = inFromServer.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+    @Override
     public String getName() throws RemoteException {
         return m_name;
     }

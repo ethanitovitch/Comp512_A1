@@ -107,9 +107,6 @@ public class ResourceMiddleware implements IResourceManager {
         String flight = resourceManagers.get(FLIGHTS).queryCustomerInfo(id, customerID);
         String car = resourceManagers.get(CARS).queryCustomerInfo(id, customerID);
         String room = resourceManagers.get(ROOMS).queryCustomerInfo(id, customerID);
-
-        car = car.substring(car.indexOf('\n')+1);
-        room = room.substring(room.indexOf('\n')+1);
         return flight + car + room;
     }
 
@@ -163,6 +160,17 @@ public class ResourceMiddleware implements IResourceManager {
             result &= reserveRoom(id, customerID, location);
         }
         return result;
+    }
+
+    @Override
+    public String queryAnalytics(String location) throws RemoteException {
+        String flight = resourceManagers.get(FLIGHTS).queryAnalytics(location);
+        String car = resourceManagers.get(CARS).queryAnalytics(location);
+        String room = resourceManagers.get(ROOMS).queryAnalytics(location);
+
+        car = car.substring(car.indexOf('\n')+1);
+        room = room.substring(room.indexOf('\n')+1);
+        return flight + car + room;
     }
 
     @Override

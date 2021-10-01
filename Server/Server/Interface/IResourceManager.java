@@ -199,7 +199,14 @@ public interface IResourceManager extends Remote
      * @return Success
      */
     public boolean bundle(int id, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room)
-	throws RemoteException; 
+    throws RemoteException; 
+    
+    /**
+     * Query reservation system analytics.
+     *
+     * @return A formatted string of the analytics
+     */
+    public String queryAnalytics(String location) throws RemoteException;
 
     /**
      * Convenience for probing the resource manager.

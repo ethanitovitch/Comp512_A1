@@ -413,6 +413,18 @@ public abstract class Client
 				}
 				break;
 			}
+			case QueryAnalytics: {
+				checkArgumentsCount(2, arguments.size());
+				
+				System.out.println("Querying analytics of items");
+				System.out.println("-Location: " + arguments.elementAt(1));
+
+				String location = arguments.elementAt(1);
+
+				String result = m_resourceManager.queryAnalytics(location);
+				System.out.println(result);
+				break;
+			}
 			case Quit:
 				checkArgumentsCount(1, arguments.size());
 

@@ -183,6 +183,12 @@ public class TCPThread extends Thread {
                         }
                         outToClient.println(result);
                     }
+                    case "queryAnalytics": {
+                        String flight = resourceManagers.get(FLIGHTS).queryAnalytics(params[1]);
+                        String car = resourceManagers.get(CARS).queryAnalytics(params[1]);
+                        String room = resourceManagers.get(ROOMS).queryAnalytics(params[1]);
+                        outToClient.println(flight + car + room);
+                    }
                 }                
             }
             socket.close();

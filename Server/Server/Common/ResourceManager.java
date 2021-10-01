@@ -390,6 +390,77 @@ public class ResourceManager implements IResourceManager
 		return result;
 	}
 
+	public String getStatus(int total, int reserved) {
+		double percent = (double) reserved / (double) total;
+		if (percent == 0.0) {
+			return "Full";
+		} else if (percent >= 0.8) {
+			return "High";
+		} else if (percent >= 0.5) {
+			return "Medium";
+		} else if (percent >= 0.2) {
+			return "Low";
+		} else {
+			return "Very Low";
+		}
+	}
+
+	public String getItemAnalytics(ReservableItem item) {
+		return item.getKey()
+				+ " Total Count: " + item.getCount()
+				+ " Reserved: " + item.getReserved()
+				+ " Status: " + getStatus(item.getCount(), item.getReserved())
+				+ "\n";
+	}
+
+	@Override
+	public String queryAnalytics(String location) throws RemoteException {
+		boolean allLocations = location == "all";
+
+		ReservableItem curObj;
+
+		String flightData = "Flight Analytics:\n--------\n";
+		boolean foundFlight = false;
+
+		String carData = "Car Analytics:\n--------\n";
+		boolean foundCar = false;
+
+		String roomData = "Room Analytics:\n--------\n";
+		boolean foundRoom = false;
+
+		for (String key : m_data.keySet()) {
+			if (key.contains("flight")) {
+				foundFlight &= true;
+				curObj = (ReservableItem)readData(-1, key);
+				flightData += getItemAnalytics(curObj);
+			} else if (key.contains("car")) {
+				curObj = (ReservableItem)readData(-1, key);
+				if (allLocations || curObj.getLocation().equals(location)) {
+					carData += getItemAnalytics(curObj);
+					foundCar &= true;
+				}
+			} else if (key.contains("room")) {
+				curObj = (ReservableItem)readData(-1, key);
+				if (allLocations || curObj.getLocation().equals(location)) {
+					roomData += getItemAnalytics(curObj);
+					foundRoom &= true;
+				}
+			}
+		}
+
+		String result = "";
+		if (foundFlight) {
+			result += flightData;
+		}
+		if (foundCar) {
+			result += carData;
+		}
+		if (foundRoom) {
+			result += roomData;
+		}
+		return result;
+	}
+
 	public String getName() throws RemoteException
 	{
 		return m_name;
