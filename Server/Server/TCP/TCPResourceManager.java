@@ -4,7 +4,10 @@ import Server.Common.ResourceManager;
 import Server.Interface.IResourceManager;
 import Server.RMI.RMIResourceManager;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.RemoteException;
@@ -15,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TCPResourceManager extends ResourceManager {
-    private static int s_serverPort = 9091;
+    private static int s_serverPort = 9092;
     private static String s_serverName = "Server";
     private static String s_rmiPrefix = "group_23_";
 
@@ -38,8 +41,14 @@ public class TCPResourceManager extends ResourceManager {
             resourceManagers.put("Cars", new ResourceManager("Cars"));
             resourceManagers.put("Rooms", new ResourceManager("Rooms"));
             while (true) {
+                String message = null;
                 Socket socket = serverSocket.accept();
-                new TCPThread(socket, resourceManagers).start();
+                try {
+                    BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    while ((message = inFromClient.readLine())!=null) {
+                        new TCPThread(socket, resourceManagers, message).start();
+                    }
+                } catch (IOException e) {}
             }
         }
         catch (Exception e) {

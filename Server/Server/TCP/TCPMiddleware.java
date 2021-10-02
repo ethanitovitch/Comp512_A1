@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 
 public class TCPMiddleware extends ResourceMiddleware {
-    private static int s_serverPort = 9091;
+    private static int s_serverPort = 9092;
     private static String s_serverName = "Server";
     private static String s_rmiPrefix = "group_23_";
     private static String[] serverNames = {"Flights", "Cars", "Rooms"};

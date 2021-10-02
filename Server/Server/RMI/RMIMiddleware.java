@@ -12,7 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class RMIMiddleware extends ResourceMiddleware {
-	private static int s_serverPort = 1099;
+	private static int s_serverPort = 2000;
   	private static String s_serverName = "Server";
   	private static String s_rmiPrefix = "group_23_";
   	private static String[] serverNames = {"Flights", "Cars", "Rooms"};
