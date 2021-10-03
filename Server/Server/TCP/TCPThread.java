@@ -33,26 +33,15 @@ public class TCPThread extends Thread {
         this.outToClient = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public TCPThread (Socket socket, Map<String, IResourceManager> resourceManagers, String message) throws IOException {
-        this.socket = socket;
-        this.message = message;
-        this.resourceManagers = resourceManagers;
-        this.outToClient = new PrintWriter(socket.getOutputStream(), true);
-    }
-
     public void run()
     {
         try
         {
-            if (message != null) {
+            while ((message = inFromClient.readLine())!=null)
+            {
                 callMethod(message);
-            } else {
-                while ((message = inFromClient.readLine())!=null)
-                {
-                    callMethod(message);
-                }
-                socket.close();
             }
+            socket.close();
         }
         catch (IOException e) {}
     }

@@ -2,18 +2,9 @@ package Server.TCP;
 
 import Server.Common.ResourceManager;
 import Server.Interface.IResourceManager;
-import Server.RMI.RMIResourceManager;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,14 +32,10 @@ public class TCPResourceManager extends ResourceManager {
             resourceManagers.put("Cars", new ResourceManager("Cars"));
             resourceManagers.put("Rooms", new ResourceManager("Rooms"));
             while (true) {
-                String message = null;
                 Socket socket = serverSocket.accept();
-                try {
-                    BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    while ((message = inFromClient.readLine())!=null) {
-                        new TCPThread(socket, resourceManagers, message).start();
-                    }
-                } catch (IOException e) {}
+                System.out.println("Found Connection");
+                new TCPThread(socket, resourceManagers).start();
+                System.out.println("Connection Closed");
             }
         }
         catch (Exception e) {
