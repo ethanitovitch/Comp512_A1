@@ -58,7 +58,7 @@ public class ResourceStub implements IResourceManager {
 
     @Override
     public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
-        String key = Thread.currentThread().getName();
+        String key = "Flight" + Thread.currentThread().getName();
         System.out.println("Key: " + key);
         outToServer.println(String.format(
                 "addFlight,%d,%d,%d,%d,%s",
@@ -183,7 +183,7 @@ public class ResourceStub implements IResourceManager {
 
     @Override
     public int queryFlight(int id, int flightNumber) throws RemoteException {
-        String key = Thread.currentThread().getName();
+        String key = "Flight" + Thread.currentThread().getName();
         System.out.println("Key: " + key);
         outToServer.println(String.format("queryFlight,%d,%d,%s",id, flightNumber, key));
         String res = getResponse(key);

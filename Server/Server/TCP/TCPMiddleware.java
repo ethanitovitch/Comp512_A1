@@ -32,9 +32,7 @@ public class TCPMiddleware extends ResourceMiddleware {
             while (true) {
                 Socket socket = serverSocket.accept();
                 new TCPThread(socket, server.resourceManagers).start();
-                for (String key : server.resourceManagers.keySet()) {
-                    new MessageReaderThread(socket, (ResourceStub)server.resourceManagers.get(key)).start();
-                }
+                new MessageReaderThread(socket, server.resourceManagers).start();
             }
         }
         catch (Exception e) {
