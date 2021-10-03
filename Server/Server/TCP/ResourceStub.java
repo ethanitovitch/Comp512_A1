@@ -12,7 +12,7 @@ import java.util.Vector;
 
 public class ResourceStub implements IResourceManager {
 
-    static final int DELAY = 200;
+    static final int DELAY = 100;
 
     Socket socket;
     PrintWriter outToServer;
@@ -122,7 +122,7 @@ public class ResourceStub implements IResourceManager {
     @Override
     public boolean deleteRooms(int id, String location) throws RemoteException {
         outToServer.println(String.format(
-                "addRooms,%d,%s",
+                "deleteRooms,%d,%s",
                 id, location));
         String res = null;
         try {

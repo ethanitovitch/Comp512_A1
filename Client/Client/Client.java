@@ -206,7 +206,7 @@ public abstract class Client
 				checkArgumentsCount(3, arguments.size());
 
 				System.out.println("Deleting all rooms at a particular location [xid=" + arguments.elementAt(1) + "]");
-				System.out.println("-Car Location: " + arguments.elementAt(2));
+				System.out.println("-Room Location: " + arguments.elementAt(2));
 
 				int id = toInt(arguments.elementAt(1));
 				String location = arguments.elementAt(2);
