@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 
 public class ResourceStub implements IResourceManager {
@@ -20,35 +18,13 @@ public class ResourceStub implements IResourceManager {
     PrintWriter outToServer;
     BufferedReader inFromServer;
     protected String m_name = "";
-//    Map<String, String> requestToResponse;
 
     public ResourceStub(Socket socket, String p_name) throws IOException {
         this.socket = socket;
         this.outToServer = new PrintWriter(socket.getOutputStream(),true);
         this.inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         m_name = p_name;
-//        requestToResponse = new HashMap<>();
     }
-
-//    public String getResponse(String request) {
-//        if (requestToResponse.containsKey(request)) {
-//            return requestToResponse.get(request);
-//        }
-//        String res = null;
-//        try {
-//            res = inFromServer.readLine();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        while (!res.contains(request)) {
-//            requestToResponse.put(request.split(",")[0], res);
-//            try {
-//                res = inFromServer.readLine();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     @Override
     public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
