@@ -59,7 +59,7 @@ public class TCPClient extends Client {
             while (true) {
                 try {
                     Socket socket = new Socket(s_serverHost, s_serverPort);
-                    m_resourceManager = new ResourceStub(socket, s_serverName);
+                    m_resourceManager = new ResourceStub(socket, "Client");
                     System.out.println("Connected to '" + s_serverName + "' server [" + s_serverHost + ":" + s_serverPort + "/" + s_rmiPrefix + s_serverName + "]");
                     break;
                 }

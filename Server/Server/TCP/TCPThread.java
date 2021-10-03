@@ -62,13 +62,14 @@ public class TCPThread extends Thread {
         System.out.println("Command: " + params[0]);
         switch (params[0]) {
             case "addFlight": {
+                System.out.println("params: " + params);
                 IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
                 Boolean result = resourceManager.addFlight(
                         Integer.parseInt(params[1]),
                         Integer.parseInt(params[2]),
                         Integer.parseInt(params[3]),
                         Integer.parseInt(params[4]));
-                outToClient.println(result);
+                outToClient.println(params[5]+","+result);
                 break;
             }
             case "addCars": {
@@ -142,7 +143,9 @@ public class TCPThread extends Thread {
                 System.out.println("get result..");
                 Integer result = resourceManager.queryFlight(Integer.parseInt(params[1]), Integer.parseInt(params[2]));
                 System.out.println("result: " + result);
-                outToClient.println((result != null) ? result : 1);
+                result = (result != null) ? result : 1;
+                String res = params[3] + "," + result;
+                outToClient.println(res);
                 break;
             }
             case "queryCars": {

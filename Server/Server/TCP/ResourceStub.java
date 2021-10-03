@@ -20,48 +20,58 @@ public class ResourceStub implements IResourceManager {
     PrintWriter outToServer;
     BufferedReader inFromServer;
     protected String m_name = "";
-//    Map<String, String> requestToResponse;
+    Map<String, String> requestToResponse;
 
     public ResourceStub(Socket socket, String p_name) throws IOException {
         this.socket = socket;
         this.outToServer = new PrintWriter(socket.getOutputStream(),true);
         this.inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         m_name = p_name;
-//        requestToResponse = new HashMap<>();
+        requestToResponse = new HashMap<>();
     }
 
-//    public String getResponse(String request) {
-//        if (requestToResponse.containsKey(request)) {
-//            return requestToResponse.get(request);
-//        }
+    public String getResponse(String request) {
+        String res = null;
+        if (m_name.equals("Client")) {
+            try {
+                res = inFromServer.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println(request + " " + requestToResponse);
+            System.out.println(request + " " + requestToResponse.containsKey(request));
+            while (!requestToResponse.containsKey(request)) {
+                System.out.println(request + " " + requestToResponse);
+                System.out.println(request + " " + requestToResponse.containsKey(request));
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            res = requestToResponse.get(request);
+            requestToResponse.remove(request);
+        }
+        return res;
+    }
+
+    @Override
+    public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
+        String key = Thread.currentThread().getName();
+        System.out.println("Key: " + key);
+        outToServer.println(String.format(
+                "addFlight,%d,%d,%d,%d,%s",
+                id, flightNum, flightSeats, flightPrice, key));
+        String res = getResponse(key);
+        System.out.println("Response: " + res);
 //        String res = null;
 //        try {
 //            res = inFromServer.readLine();
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-//        while (!res.contains(request)) {
-//            requestToResponse.put(request.split(",")[0], res);
-//            try {
-//                res = inFromServer.readLine();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-
-    @Override
-    public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
-        outToServer.println(String.format(
-                "addFlight,%d,%d,%d,%d",
-                id, flightNum, flightSeats, flightPrice));
-        String res = null;
-        try {
-            res = inFromServer.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Boolean.valueOf(res);
+        return Boolean.valueOf(res.replace(key + ",", ""));
     }
 
     @Override
@@ -173,14 +183,18 @@ public class ResourceStub implements IResourceManager {
 
     @Override
     public int queryFlight(int id, int flightNumber) throws RemoteException {
-        outToServer.println(String.format("queryFlight,%d,%d",id, flightNumber));
-        String res = null;
-        try {
-            res = inFromServer.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Integer.parseInt(res);
+        String key = Thread.currentThread().getName();
+        System.out.println("Key: " + key);
+        outToServer.println(String.format("queryFlight,%d,%d,%s",id, flightNumber, key));
+        String res = getResponse(key);
+        System.out.println("res: " + res);
+//        String res = null;
+//        try {
+//            res = inFromServer.readLine();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        return Integer.parseInt(res.replace(key + ",", ""));
     }
 
     @Override

@@ -148,7 +148,7 @@ public class ResourceManager implements IResourceManager
 	public boolean addFlight(int xid, int flightNum, int flightSeats, int flightPrice) throws RemoteException
 	{
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

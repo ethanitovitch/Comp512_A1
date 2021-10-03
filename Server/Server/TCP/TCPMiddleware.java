@@ -31,9 +31,10 @@ public class TCPMiddleware extends ResourceMiddleware {
             ServerSocket serverSocket = new ServerSocket(s_serverPort);
             while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println("Found Connection");
                 new TCPThread(socket, server.resourceManagers).start();
-                System.out.println("Connection Closed");
+                for (String key : server.resourceManagers.keySet()) {
+                    new MessageReaderThread(socket, (ResourceStub)server.resourceManagers.get(key)).start();
+                }
             }
         }
         catch (Exception e) {
