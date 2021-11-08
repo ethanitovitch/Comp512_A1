@@ -35,8 +35,8 @@ public class TCPMiddleware extends ResourceMiddleware {
 
                 Map<String, IResourceManager> newResourceManagers = server.connectResourceManager(args, serverNames);
 
+                System.out.println("Starting TCP Thread");
                 new TCPThread(socket, newResourceManagers).start();
-                System.out.println("Connection Closed");
             }
         }
         catch (Exception e) {

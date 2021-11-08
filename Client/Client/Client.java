@@ -1,6 +1,8 @@
 package Client;
 
 import Server.Interface.*;
+import Server.Transaction.InvalidTransactionException;
+import Server.Transaction.TransactionAbortedException;
 
 import java.util.*;
 import java.io.*;
@@ -67,8 +69,7 @@ public abstract class Client
 		}
 	}
 
-	public void execute(Command cmd, Vector<String> arguments) throws RemoteException, NumberFormatException
-	{
+	public void execute(Command cmd, Vector<String> arguments) throws RemoteException, NumberFormatException, InvalidTransactionException, TransactionAbortedException {
 		switch (cmd)
 		{
 			case Help:
@@ -83,6 +84,34 @@ public abstract class Client
 				}
 				break;
 			}
+			case Start: {
+				checkArgumentsCount(1, arguments.size());
+
+				System.out.println("Starting Transaction");
+				int transactionId = m_resourceManager.start();
+				System.out.println("Starting transaction [xid=" + transactionId + "]");
+				break;
+			}
+			case Commit: {
+				checkArgumentsCount(2, arguments.size());
+
+				int transactionId = toInt(arguments.elementAt(1));
+				System.out.println("Committing transaction [xid=" + transactionId + "]");
+				m_resourceManager.commit(transactionId);
+				System.out.println("Committed transaction");
+				break;
+			}
+			case Abort: {
+				checkArgumentsCount(2, arguments.size());
+
+				int transactionId = toInt(arguments.elementAt(1));
+				System.out.println("Aborting transaction [xid=" + transactionId + "]");
+				m_resourceManager.abort(transactionId);
+				System.out.println("Aborted transaction");
+				break;
+			}
+
+
 			case AddFlight: {
 				checkArgumentsCount(5, arguments.size());
 

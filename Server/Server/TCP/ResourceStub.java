@@ -1,6 +1,9 @@
 package Server.TCP;
 
+import Server.Common.PendingTransaction;
 import Server.Interface.IResourceManager;
+import Server.Transaction.InvalidTransactionException;
+import Server.Transaction.TransactionAbortedException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,6 +11,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 public class ResourceStub implements IResourceManager {
@@ -18,12 +23,34 @@ public class ResourceStub implements IResourceManager {
     PrintWriter outToServer;
     BufferedReader inFromServer;
     protected String m_name = "";
+    private Map<Integer, PendingTransaction> pendingRMItemOperationsMap;
 
     public ResourceStub(Socket socket, String p_name) throws IOException {
         this.socket = socket;
         this.outToServer = new PrintWriter(socket.getOutputStream(),true);
         this.inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         m_name = p_name;
+        pendingRMItemOperationsMap = new HashMap<>();
+    }
+
+    @Override
+    public int start() throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public boolean commit(int xid) throws RemoteException, TransactionAbortedException, InvalidTransactionException {
+        return false;
+    }
+
+    @Override
+    public boolean abort(int xid) throws RemoteException, InvalidTransactionException {
+        return false;
+    }
+
+    @Override
+    public boolean shutdown() throws RemoteException {
+        return false;
     }
 
     @Override

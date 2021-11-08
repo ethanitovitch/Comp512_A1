@@ -1,6 +1,7 @@
 package Server.TCP;
 
 import Server.Interface.IResourceManager;
+import Server.Transaction.InvalidTransactionException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,12 +44,12 @@ public class TCPThread extends Thread {
             }
             socket.close();
         }
-        catch (IOException e) {}
+        catch (IOException | InvalidTransactionException e) {}
     }
 
-    public void callMethod(String message) throws RemoteException {
+    public void callMethod(String message) throws RemoteException, InvalidTransactionException {
         String[] params =  message.split(",");
-        System.out.println("Command: " + params[0]);
+        System.out.println("TCP Thread Received Command: " + params[0]);
         switch (params[0]) {
             case "addFlight": {
                 IResourceManager resourceManager = resourceManagers.get(FLIGHTS);

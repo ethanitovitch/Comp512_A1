@@ -6,6 +6,8 @@
 package Server.Common;
 
 import Server.Interface.*;
+import Server.Transaction.InvalidTransactionException;
+import Server.Transaction.TransactionAbortedException;
 
 import java.util.*;
 import java.rmi.RemoteException;
@@ -15,21 +17,20 @@ public class ResourceManager implements IResourceManager
 {
 	protected String m_name = "";
 	protected RMHashMap m_data = new RMHashMap();
+	private Map<Integer, PendingTransaction> pendingTransactions;
 
 	public ResourceManager(String p_name)
 	{
 		m_name = p_name;
+		pendingTransactions = new HashMap<>();
 	}
 
 	// Reads a data item
 	protected RMItem readData(int xid, String key)
 	{
 		synchronized(m_data) {
-			RMItem item = m_data.get(key);
-			if (item != null) {
-				return (RMItem)item.clone();
-			}
-			return null;
+			RMItem item = pendingTransactions.get(xid).readItem(key);
+			return item;
 		}
 	}
 
@@ -37,7 +38,7 @@ public class ResourceManager implements IResourceManager
 	protected void writeData(int xid, String key, RMItem value)
 	{
 		synchronized(m_data) {
-			m_data.put(key, value);
+			pendingTransactions.get(xid).updateOrCreate(key, value);
 		}
 	}
 
@@ -45,7 +46,7 @@ public class ResourceManager implements IResourceManager
 	protected void removeData(int xid, String key)
 	{
 		synchronized(m_data) {
-			m_data.remove(key);
+			pendingTransactions.get(xid).deleteItem(key);
 		}
 	}
 
@@ -143,11 +144,40 @@ public class ResourceManager implements IResourceManager
 		}        
 	}
 
+	@Override
+	public int start() throws RemoteException {
+		return 0;
+	}
+
+	@Override
+	public boolean commit(int xid) throws RemoteException, TransactionAbortedException, InvalidTransactionException {
+		pendingTransactions.get(xid).commit();
+		return true;
+	}
+
+	@Override
+	public boolean abort(int xid) throws RemoteException, InvalidTransactionException {
+		pendingTransactions.remove(xid);
+		return true;
+	}
+
+	@Override
+	public boolean shutdown() throws RemoteException {
+		return false;
+	}
+
 	// Create a new flight, or add seats to existing flight
 	// NOTE: if flightPrice <= 0 and the flight already exists, it maintains its current price
 	public boolean addFlight(int xid, int flightNum, int flightSeats, int flightPrice) throws RemoteException
 	{
 		Trace.info("RM::addFlight(" + xid + ", " + flightNum + ", " + flightSeats + ", $" + flightPrice + ") called");
+//		try {
+//			System.out.println("Add Flight Sleeping...");
+//			Thread.sleep(10000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+
 		Flight curObj = (Flight)readData(xid, Flight.getKey(flightNum));
 		if (curObj == null)
 		{

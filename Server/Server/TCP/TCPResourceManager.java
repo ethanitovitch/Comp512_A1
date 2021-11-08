@@ -34,8 +34,8 @@ public class TCPResourceManager extends ResourceManager {
             while (true) {
                 Socket socket = serverSocket.accept();
                 System.out.println("Found Connection");
+                System.out.println("Starting TCP Thread");
                 new TCPThread(socket, resourceManagers).start();
-                System.out.println("Connection Closed");
             }
         }
         catch (Exception e) {

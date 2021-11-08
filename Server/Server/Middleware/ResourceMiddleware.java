@@ -1,12 +1,17 @@
 package Server.Middleware;
 
 import Server.Interface.IResourceManager;
+import Server.Transaction.InvalidTransactionException;
+import Server.Transaction.TransactionAbortedException;
+import Server.Transaction.TransactionManager;
 
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+
+import static Server.LockManager.TransactionLockObject.LockType.LOCK_WRITE;
 
 public class ResourceMiddleware implements IResourceManager {
 
@@ -17,15 +22,48 @@ public class ResourceMiddleware implements IResourceManager {
     protected String m_name = "";
     protected Map<String, IResourceManager> resourceManagers = new HashMap<>();
 
+    private TransactionManager transactionManager;
+
     public ResourceMiddleware(String p_name)
     {
         m_name = p_name;
+        transactionManager = new TransactionManager();
     }
 
     @Override
-    public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
+    public int start() throws RemoteException {
+        return transactionManager.start();
+    }
+
+    @Override
+    public boolean commit(int xid) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
+        return transactionManager.commit(xid);
+    }
+
+    @Override
+    public boolean abort(int xid) throws RemoteException, InvalidTransactionException {
+        return transactionManager.abort(xid);
+    }
+
+    @Override
+    public boolean shutdown() throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException, InvalidTransactionException {
         IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
-        return resourceManager.addFlight(id, flightNum, flightSeats, flightPrice);
+        boolean hasLock = transactionManager.getLock(id, FLIGHTS, resourceManagers.get(FLIGHTS), LOCK_WRITE);
+        if (!hasLock) {
+            transactionManager.abort(id);
+            throw new InvalidTransactionException();
+        }
+        try {
+            return resourceManager.addFlight(id, flightNum, flightSeats, flightPrice);
+        } catch (RemoteException | InvalidTransactionException e) {
+            transactionManager.abort(id);
+            throw e;
+        }
     }
 
     @Override
