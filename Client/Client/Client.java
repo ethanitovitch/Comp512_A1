@@ -1,7 +1,6 @@
 package Client;
 
 import Server.Interface.*;
-import Server.Transaction.*;
 
 import java.util.*;
 import java.io.*;
@@ -54,6 +53,13 @@ public abstract class Client
 					connectServer();
 					execute(cmd, arguments);
 				}
+			}
+			catch(InvalidTransactionException e) {
+				System.err.println((char)27 + "[31;1mCommand exception: " + (char)27 + "[0mInvalid Transaction");
+			}
+
+			catch(TransactionAbortedException e) {
+				System.err.println((char)27 + "[31;1mCommand exception: " + (char)27 + "[0mTransaction Aborted");
 			}
 			catch (IllegalArgumentException|ServerException e) {
 				System.err.println((char)27 + "[31;1mCommand exception: " + (char)27 + "[0m" + e.getLocalizedMessage());

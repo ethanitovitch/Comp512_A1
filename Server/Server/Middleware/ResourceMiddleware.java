@@ -1,9 +1,8 @@
 package Server.Middleware;
 
 import Server.Interface.IResourceManager;
-import Server.LockManager.DeadlockException;
-import Server.Transaction.InvalidTransactionException;
-import Server.Transaction.TransactionAbortedException;
+import Server.Interface.InvalidTransactionException;
+import Server.Interface.TransactionAbortedException;
 import Server.Transaction.TransactionManager;
 
 import java.rmi.RemoteException;
@@ -47,12 +46,12 @@ public class ResourceMiddleware implements IResourceManager {
     }
 
     @Override
-    public boolean commit(int xid) throws RemoteException {
+    public boolean commit(int xid) throws RemoteException, InvalidTransactionException {
         return transactionManager.commit(xid);
     }
 
     @Override
-    public boolean abort(int xid) throws RemoteException {
+    public boolean abort(int xid) throws RemoteException, InvalidTransactionException {
         return transactionManager.abort(xid);
     }
 
@@ -62,33 +61,31 @@ public class ResourceMiddleware implements IResourceManager {
     }
 
     @Override
-    public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
+    public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
         boolean hasLock = transactionManager.getLock(id, FLIGHTS + flightNum, resourceManager, LOCK_WRITE);
         if (hasLock) {
             return resourceManager.addFlight(id, flightNum, flightSeats, flightPrice);
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException();
-            return false;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public boolean addCars(int id, String location, int numCars, int price) throws RemoteException {
+    public boolean addCars(int id, String location, int numCars, int price) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(CARS);
         boolean hasLock = transactionManager.getLock(id, CARS + location, resourceManager, LOCK_WRITE);
         if (hasLock) {
             return resourceManager.addCars(id, location, numCars, price);
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException();
-            return false;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public boolean addRooms(int id, String location, int numRooms, int price) throws RemoteException {
+    public boolean addRooms(int id, String location, int numRooms, int price) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(ROOMS);
         boolean hasLock = transactionManager.getLock(id, ROOMS + location, resourceManager, LOCK_WRITE);
         if (hasLock) {
@@ -101,7 +98,7 @@ public class ResourceMiddleware implements IResourceManager {
     }
 
     @Override
-    public int newCustomer(int id) throws RemoteException {
+    public int newCustomer(int id) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         int cid = Integer.parseInt(String.valueOf(id) +
                 String.valueOf(Calendar.getInstance().get(Calendar.MILLISECOND)) +
                 String.valueOf(Math.round(Math.random() * 100 + 1)));
@@ -110,7 +107,7 @@ public class ResourceMiddleware implements IResourceManager {
     }
 
     @Override
-    public boolean newCustomer(int id, int cid) throws RemoteException {
+    public boolean newCustomer(int id, int cid) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         boolean flightLock = transactionManager.getLock(id, FLIGHTS + cid, resourceManagers.get(FLIGHTS), LOCK_WRITE);
         boolean carLock = transactionManager.getLock(id, CARS + cid, resourceManagers.get(CARS), LOCK_WRITE);
         boolean roomLock = transactionManager.getLock(id, ROOMS + cid, resourceManagers.get(ROOMS), LOCK_WRITE);
@@ -121,26 +118,24 @@ public class ResourceMiddleware implements IResourceManager {
             return flight && car && room;
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException();
-            return false;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public boolean deleteFlight(int id, int flightNum) throws RemoteException {
+    public boolean deleteFlight(int id, int flightNum) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
         boolean hasLock = transactionManager.getLock(id, FLIGHTS + flightNum, resourceManager, LOCK_WRITE);
         if (hasLock) {
             return resourceManager.deleteFlight(id, flightNum);
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException(id);
-            return false;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public boolean deleteCars(int id, String location) throws RemoteException {
+    public boolean deleteCars(int id, String location) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(CARS);
         boolean hasLock = transactionManager.getLock(id, CARS + location, resourceManager, LOCK_WRITE);
         if (hasLock) {
@@ -148,26 +143,24 @@ public class ResourceMiddleware implements IResourceManager {
 
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException(id);
-            return false;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public boolean deleteRooms(int id, String location) throws RemoteException {
+    public boolean deleteRooms(int id, String location) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(ROOMS);
         boolean hasLock = transactionManager.getLock(id, ROOMS + location, resourceManager, LOCK_WRITE);
         if (hasLock) {
             return resourceManager.deleteRooms(id, location);
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException(id);
-            return false;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public boolean deleteCustomer(int id, int customerID) throws RemoteException {
+    public boolean deleteCustomer(int id, int customerID) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         boolean flightLock = transactionManager.getLock(id, FLIGHTS + customerID, resourceManagers.get(FLIGHTS), LOCK_WRITE);
         boolean carLock = transactionManager.getLock(id, CARS + customerID, resourceManagers.get(CARS), LOCK_WRITE);
         boolean roomLock = transactionManager.getLock(id, ROOMS + customerID, resourceManagers.get(ROOMS), LOCK_WRITE);
@@ -179,52 +172,48 @@ public class ResourceMiddleware implements IResourceManager {
             return result;
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException();
-            return false;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public int queryFlight(int id, int flightNumber) throws RemoteException {
+    public int queryFlight(int id, int flightNumber) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
         boolean hasLock = transactionManager.getLock(id, FLIGHTS + flightNumber, resourceManager, LOCK_READ);
         if (hasLock) {
             return resourceManager.queryFlight(id, flightNumber);
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException();
-            return -1;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public int queryCars(int id, String location) throws RemoteException {
+    public int queryCars(int id, String location) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(CARS);
         boolean hasLock = transactionManager.getLock(id, CARS + location, resourceManager, LOCK_READ);
         if (hasLock) {
             return resourceManager.queryCars(id, location);
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException();
-            return -1;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public int queryRooms(int id, String location) throws RemoteException {
+    public int queryRooms(int id, String location) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(ROOMS);
         boolean hasLock = transactionManager.getLock(id, ROOMS + location, resourceManager, LOCK_READ);
         if (hasLock) {
             return resourceManager.queryRooms(id, location);
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException();
-            return -1;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public String queryCustomerInfo(int id, int customerID) throws RemoteException {
+    public String queryCustomerInfo(int id, int customerID) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         boolean flightLock = transactionManager.getLock(id, FLIGHTS + customerID, resourceManagers.get(FLIGHTS), LOCK_READ);
         boolean carLock = transactionManager.getLock(id, CARS + customerID, resourceManagers.get(CARS), LOCK_READ);
         boolean roomLock = transactionManager.getLock(id, ROOMS + customerID, resourceManagers.get(ROOMS), LOCK_READ);
@@ -235,52 +224,48 @@ public class ResourceMiddleware implements IResourceManager {
             return flight + car + room;
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException();
-            return "Transaction aborted";
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public int queryFlightPrice(int id, int flightNumber) throws RemoteException {
+    public int queryFlightPrice(int id, int flightNumber) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(FLIGHTS);
         boolean hasLock = transactionManager.getLock(id, FLIGHTS + flightNumber, resourceManager, LOCK_READ);
         if (hasLock) {
             return resourceManager.queryFlightPrice(id, flightNumber);
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException();
-            return -1;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public int queryCarsPrice(int id, String location) throws RemoteException {
+    public int queryCarsPrice(int id, String location) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(CARS);
         boolean hasLock = transactionManager.getLock(id, CARS + location, resourceManager, LOCK_READ);
         if (hasLock) {
             return resourceManager.queryCarsPrice(id, location);
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException();
-            return -1;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public int queryRoomsPrice(int id, String location) throws RemoteException {
+    public int queryRoomsPrice(int id, String location) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         IResourceManager resourceManager = resourceManagers.get(ROOMS);
         boolean hasLock = transactionManager.getLock(id, ROOMS + location, resourceManager, LOCK_READ);
         if (hasLock) {
             return resourceManager.queryRoomsPrice(id, location);
         } else {
             transactionManager.abort(id);
-//            throw new TransactionAbortedException();
-            return -1;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public boolean reserveFlight(int id, int customerID, int flightNumber) throws RemoteException {
+    public boolean reserveFlight(int id, int customerID, int flightNumber) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         boolean customerLock = transactionManager.getLock(id, FLIGHTS + customerID, resourceManagers.get(FLIGHTS), LOCK_WRITE);
         boolean flightLock = transactionManager.getLock(id, FLIGHTS + flightNumber, resourceManagers.get(FLIGHTS), LOCK_WRITE);
         if (customerLock && flightLock) {
@@ -288,13 +273,12 @@ public class ResourceMiddleware implements IResourceManager {
             return resourceManager.reserveFlight(id, customerID, flightNumber);
         } else {
             transactionManager.abort(id);
-//            throw new InvalidTransactionException(id);
-            return false;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public boolean reserveCar(int id, int customerID, String location) throws RemoteException {
+    public boolean reserveCar(int id, int customerID, String location) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         boolean customerLock = transactionManager.getLock(id, CARS + customerID, resourceManagers.get(CARS), LOCK_WRITE);
         boolean carLock = transactionManager.getLock(id, CARS + location, resourceManagers.get(CARS), LOCK_WRITE);
         if (customerLock && carLock) {
@@ -302,13 +286,12 @@ public class ResourceMiddleware implements IResourceManager {
             return resourceManager.reserveCar(id, customerID, location);
         } else {
             transactionManager.abort(id);
-//            throw new InvalidTransactionException(id);
-            return false;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public boolean reserveRoom(int id, int customerID, String location) throws RemoteException {
+    public boolean reserveRoom(int id, int customerID, String location) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         boolean customerLock = transactionManager.getLock(id, ROOMS + customerID, resourceManagers.get(ROOMS), LOCK_WRITE);
         boolean carLock = transactionManager.getLock(id, ROOMS + location, resourceManagers.get(ROOMS), LOCK_WRITE);
         if (customerLock && carLock) {
@@ -316,13 +299,12 @@ public class ResourceMiddleware implements IResourceManager {
             return resourceManager.reserveRoom(id, customerID, location);
         } else {
             transactionManager.abort(id);
-//            throw new InvalidTransactionException(id);
-            return false;
+            throw new TransactionAbortedException();
         }
     }
 
     @Override
-    public boolean bundle(int id, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException {
+    public boolean bundle(int id, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         boolean result = true;
 
         for (String flightNumber : flightNumbers) {

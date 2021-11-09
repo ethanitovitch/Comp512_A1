@@ -1,7 +1,8 @@
 package Server.TCP;
 
 import Server.Interface.IResourceManager;
-import Server.Transaction.InvalidTransactionException;
+import Server.Interface.InvalidTransactionException;
+import Server.Interface.TransactionAbortedException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,10 +45,10 @@ public class TCPThread extends Thread {
             }
             socket.close();
         }
-        catch (IOException | InvalidTransactionException e) {}
+        catch (IOException | InvalidTransactionException | TransactionAbortedException e) {}
     }
 
-    public void callMethod(String message) throws RemoteException, InvalidTransactionException {
+    public void callMethod(String message) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
         String[] params =  message.split(",");
         System.out.println("TCP Thread Received Command: " + params[0]);
         switch (params[0]) {

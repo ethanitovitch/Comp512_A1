@@ -1,6 +1,7 @@
 package Server.Transaction;
 
 import Server.Interface.IResourceManager;
+import Server.Interface.InvalidTransactionException;
 import Server.LockManager.DeadlockException;
 import Server.LockManager.LockManager;
 import Server.LockManager.TransactionLockObject;
@@ -29,9 +30,9 @@ public class TransactionManager {
         return transactionId;
     }
 
-    public boolean commit(int xid) throws RemoteException {
+    public boolean commit(int xid) throws RemoteException, InvalidTransactionException {
         if (!transactions.containsKey(xid)) {
-//            throw new InvalidTransactionException();
+            throw new InvalidTransactionException();
         }
         Transaction transaction = transactions.get(xid);
         boolean result = transaction.commit();
@@ -40,9 +41,9 @@ public class TransactionManager {
         return result;
     }
 
-    public boolean abort(int xid) throws RemoteException {
+    public boolean abort(int xid) throws RemoteException, InvalidTransactionException {
         if (!transactions.containsKey(xid)) {
-//            throw new InvalidTransactionException();
+            throw new InvalidTransactionException();
         }
         Transaction transaction = transactions.get(xid);
         boolean result = transaction.abort();
@@ -51,7 +52,7 @@ public class TransactionManager {
         return result;
     }
 
-    public boolean getLock(int xid, String data, IResourceManager resourceManager, TransactionLockObject.LockType lockType) throws RemoteException {
+    public boolean getLock(int xid, String data, IResourceManager resourceManager, TransactionLockObject.LockType lockType) throws RemoteException,  InvalidTransactionException{
         if (!transactions.containsKey(xid)) {
             return false;
         }
@@ -62,8 +63,7 @@ public class TransactionManager {
             try {
                 boolean locked = lockManager.Lock(xid, data, lockType);
                 if (!locked) {
-                    return false;
-//                    throw new InvalidTransactionException();
+                    throw new InvalidTransactionException();
                 }
             } catch (DeadlockException e) {
                 return false;

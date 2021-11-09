@@ -8,20 +8,10 @@ java.policy: FORCE
 
 FORCE: ;
 
-InvalidTransactionException.jar: Server/Transaction/InvalidTransactionException.java
-	@echo "Compiling Invalid Transaction"
-	javac Server/Transaction/InvalidTransactionException.java
-	jar cvf InvalidTransactionException.jar Server/Transaction/InvalidTransactionException.class
-
-TransactionAbortedException.jar: Server/Transaction/TransactionAbortedException.java
-	@echo "Compiling Aborted Transaction"
-	javac Server/Transaction/TransactionAbortedException.java
-	jar cvf TransactionAbortedException.jar Server/Transaction/TransactionAbortedException.class
-
-RMIInterface.jar: Server/Interface/IResourceManager.java
+RMIInterface.jar: Server/Interface/*.java
 	@echo "Compiling RMI server interface"
-	javac Server/Interface/IResourceManager.java
-	jar cvf RMIInterface.jar Server/Interface/IResourceManager.class
+	javac Server/Interface/*.java
+	jar cvf RMIInterface.jar Server/Interface/*.class
 
 ResourceStub.jar: Server/TCP/ResourceStub.java
 	@echo "Compiling Resource Stub"

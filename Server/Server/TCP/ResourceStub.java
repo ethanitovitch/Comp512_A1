@@ -2,8 +2,6 @@ package Server.TCP;
 
 import Server.Common.PendingTransaction;
 import Server.Interface.IResourceManager;
-import Server.Transaction.InvalidTransactionException;
-import Server.Transaction.TransactionAbortedException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
