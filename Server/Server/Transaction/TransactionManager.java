@@ -60,17 +60,12 @@ public class TransactionManager {
         synchronized (transaction)
         {
             try {
-                System.out.println("Getting lock for ID: " + xid);
                 boolean locked = lockManager.Lock(xid, data, lockType);
-                System.out.println("Lock for ID: " + xid + "  " + locked);
                 if (!locked) {
-                    abort(xid);
-                    System.out.println("Could not obtain a lock");
                     return false;
+//                    throw new InvalidTransactionException();
                 }
             } catch (DeadlockException e) {
-                System.out.println("Deadlock occurred");
-                this.abort(xid);
                 return false;
             }
 

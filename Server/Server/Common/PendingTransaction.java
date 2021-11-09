@@ -35,10 +35,8 @@ public class PendingTransaction {
     }
 
     public synchronized void deleteItem(String key) {
-        if (updatedItems.containsKey(key)) {
-            deletedItems.add(key);
-            updatedItems.remove(key);
-        }
+        deletedItems.add(key);
+        updatedItems.remove(key);
     }
 
     public synchronized boolean commit() {
