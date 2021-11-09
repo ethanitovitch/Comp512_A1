@@ -11,9 +11,10 @@ public class Transaction {
 
     public Transaction(int transactionId) {
         this.transactionId = transactionId;
+        this.resourceManagers = new Vector<>();
     }
 
-    public boolean commit() throws RemoteException, InvalidTransactionException, TransactionAbortedException {
+    public boolean commit() throws RemoteException {
         boolean result = true;
         for (IResourceManager resourceManager : resourceManagers) {
             result &= resourceManager.commit(this.transactionId);
@@ -21,7 +22,7 @@ public class Transaction {
         return result;
     }
 
-    public boolean abort() throws RemoteException, InvalidTransactionException {
+    public boolean abort() throws RemoteException {
         boolean result = true;
         for (IResourceManager resourceManager : resourceManagers) {
             result &= resourceManager.abort(this.transactionId);

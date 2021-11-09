@@ -8,17 +8,17 @@ java.policy: FORCE
 
 FORCE: ;
 
-../Server/RMIInterface.jar: ../Server/Server/Interface/IResourceManager.java
-	make -C ../Server/ RMIInterface.jar
-
-../Server/ResourceStub.jar: ../Server/Server/TCP/ResourceStub.java
-	make -C ../Server/ ResourceStub.jar
-
 ../Server/InvalidTransactionException.jar: ../Server/Server/Transaction/InvalidTransactionException.java
 	make -C ../Server/ InvalidTransactionException.jar
 
 ../Server/TransactionAbortedException.jar: ../Server/Server/Transaction/TransactionAbortedException.java
 	make -C ../Server/ TransactionAbortedException.jar
+
+../Server/RMIInterface.jar: ../Server/Server/Interface/IResourceManager.java
+	make -C ../Server/ RMIInterface.jar
+
+../Server/ResourceStub.jar: ../Server/Server/TCP/ResourceStub.java
+	make -C ../Server/ ResourceStub.jar
 
 compile-client: ../Server/RMIInterface.jar ../Server/ResourceStub.jar ../Server/InvalidTransactionException.jar ../Server/TransactionAbortedException.jar
 	javac -cp ../Server/RMIInterface.jar:../Server/ResourceStub.jar:../Server/InvalidTransactionException.jar:../Server/TransactionAbortedException.jar Client/*.java

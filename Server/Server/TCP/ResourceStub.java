@@ -39,12 +39,17 @@ public class ResourceStub implements IResourceManager {
     }
 
     @Override
-    public boolean commit(int xid) throws RemoteException, TransactionAbortedException, InvalidTransactionException {
+    public void start(int xid) throws RemoteException {
+
+    }
+
+    @Override
+    public boolean commit(int xid) throws RemoteException {
         return false;
     }
 
     @Override
-    public boolean abort(int xid) throws RemoteException, InvalidTransactionException {
+    public boolean abort(int xid) throws RemoteException {
         return false;
     }
 

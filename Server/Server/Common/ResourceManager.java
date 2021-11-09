@@ -145,18 +145,23 @@ public class ResourceManager implements IResourceManager
 	}
 
 	@Override
+	public void start(int xid) throws RemoteException {
+		pendingTransactions.put(xid, new PendingTransaction(xid, m_data));
+	}
+
+	@Override
 	public int start() throws RemoteException {
 		return 0;
 	}
 
 	@Override
-	public boolean commit(int xid) throws RemoteException, TransactionAbortedException, InvalidTransactionException {
+	public boolean commit(int xid) throws RemoteException {
 		pendingTransactions.get(xid).commit();
 		return true;
 	}
 
 	@Override
-	public boolean abort(int xid) throws RemoteException, InvalidTransactionException {
+	public boolean abort(int xid) throws RemoteException {
 		pendingTransactions.remove(xid);
 		return true;
 	}
@@ -171,12 +176,6 @@ public class ResourceManager implements IResourceManager
 	public boolean addFlight(int xid, int flightNum, int flightSeats, int flightPrice) throws RemoteException
 	{
 		Trace.info("RM::addFlight(" + xid + ", " + flightNum + ", " + flightSeats + ", $" + flightPrice + ") called");
-//		try {
-//			System.out.println("Add Flight Sleeping...");
-//			Thread.sleep(10000);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
 
 		Flight curObj = (Flight)readData(xid, Flight.getKey(flightNum));
 		if (curObj == null)

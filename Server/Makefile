@@ -8,16 +8,6 @@ java.policy: FORCE
 
 FORCE: ;
 
-RMIInterface.jar: Server/Interface/IResourceManager.java
-	@echo "Compiling RMI server interface"
-	javac Server/Interface/IResourceManager.java
-	jar cvf RMIInterface.jar Server/Interface/IResourceManager.class
-
-ResourceStub.jar: Server/TCP/ResourceStub.java
-	@echo "Compiling Resource Stub"
-	javac Server/TCP/ResourceStub.java
-	jar cvf ResourceStub.jar Server/TCP/ResourceStub.class
-
 InvalidTransactionException.jar: Server/Transaction/InvalidTransactionException.java
 	@echo "Compiling Invalid Transaction"
 	javac Server/Transaction/InvalidTransactionException.java
@@ -28,8 +18,18 @@ TransactionAbortedException.jar: Server/Transaction/TransactionAbortedException.
 	javac Server/Transaction/TransactionAbortedException.java
 	jar cvf TransactionAbortedException.jar Server/Transaction/TransactionAbortedException.class
 
-compile-server-rmi: Server/RMI/*.java Server/Interface/IResourceManager.java Server/Common/*.java Server/TCP/*.java
-	javac Server/RMI/*.java Server/Interface/IResourceManager.java Server/Common/*.java Server/TCP/*.java
+RMIInterface.jar: Server/Interface/IResourceManager.java
+	@echo "Compiling RMI server interface"
+	javac Server/Interface/IResourceManager.java
+	jar cvf RMIInterface.jar Server/Interface/IResourceManager.class
+
+ResourceStub.jar: Server/TCP/ResourceStub.java
+	@echo "Compiling Resource Stub"
+	javac Server/TCP/ResourceStub.java
+	jar cvf ResourceStub.jar Server/TCP/ResourceStub.class
+
+compile-server-rmi: Server/RMI/*.java Server/Interface/IResourceManager.java Server/Common/*.java Server/TCP/*.java Server/Transaction/*.java
+	javac Server/RMI/*.java Server/Interface/IResourceManager.java Server/Common/*.java Server/TCP/*.java Server/Transaction/*.java
 
 clean:
 	rm -f Server/Interface/*.class Server/Common/*.class Server/RMI/*.class Server/TCP/*.class Server/Transaction/*.class

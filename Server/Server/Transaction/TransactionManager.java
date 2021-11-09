@@ -29,9 +29,9 @@ public class TransactionManager {
         return transactionId;
     }
 
-    public boolean commit(int xid) throws RemoteException, InvalidTransactionException, TransactionAbortedException {
+    public boolean commit(int xid) throws RemoteException {
         if (!transactions.containsKey(xid)) {
-            throw new InvalidTransactionException();
+//            throw new InvalidTransactionException();
         }
         Transaction transaction = transactions.get(xid);
         boolean result = transaction.commit();
@@ -40,9 +40,9 @@ public class TransactionManager {
         return result;
     }
 
-    public boolean abort(int xid) throws RemoteException, InvalidTransactionException {
+    public boolean abort(int xid) throws RemoteException {
         if (!transactions.containsKey(xid)) {
-            throw new InvalidTransactionException();
+//            throw new InvalidTransactionException();
         }
         Transaction transaction = transactions.get(xid);
         boolean result = transaction.abort();
@@ -51,7 +51,7 @@ public class TransactionManager {
         return result;
     }
 
-    public boolean getLock(int xid, String data, IResourceManager resourceManager, TransactionLockObject.LockType lockType) throws RemoteException, InvalidTransactionException {
+    public boolean getLock(int xid, String data, IResourceManager resourceManager, TransactionLockObject.LockType lockType) throws RemoteException {
         if (!transactions.containsKey(xid)) {
             return false;
         }
@@ -60,13 +60,15 @@ public class TransactionManager {
         synchronized (transaction)
         {
             try {
+                System.out.println("Getting lock for ID: " + xid);
                 boolean locked = lockManager.Lock(xid, data, lockType);
+                System.out.println("Lock for ID: " + xid + "  " + locked);
                 if (!locked) {
                     abort(xid);
                     System.out.println("Could not obtain a lock");
                     return false;
                 }
-            } catch (DeadlockException | InvalidTransactionException e) {
+            } catch (DeadlockException e) {
                 System.out.println("Deadlock occurred");
                 this.abort(xid);
                 return false;

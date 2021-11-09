@@ -28,9 +28,11 @@ public interface IResourceManager extends Remote
 {
     public int start() throws RemoteException;
 
-    public boolean commit(int xid) throws RemoteException, TransactionAbortedException, InvalidTransactionException;
+    public void start(int xid) throws RemoteException;
 
-    public boolean abort(int xid) throws RemoteException, InvalidTransactionException;
+    public boolean commit(int xid) throws RemoteException;
+
+    public boolean abort(int xid) throws RemoteException;
 
     public boolean shutdown() throws RemoteException;
 
@@ -45,7 +47,7 @@ public interface IResourceManager extends Remote
      * @return Success
      */
     public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) 
-	throws RemoteException, InvalidTransactionException;
+	throws RemoteException;
     
     /**
      * Add car at a location.
