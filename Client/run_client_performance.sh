@@ -1,0 +1,1 @@
+java -Djava.security.policy=java.policy -cp ../Server/RMIInterface.jar:. Client.RMIClientPerformance $1 $2 
